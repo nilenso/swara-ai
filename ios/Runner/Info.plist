@@ -47,5 +47,9 @@
 	<true/>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>We need access to your microphone to record audio</string>
+	<key>UIFileSharingEnabled</key>
+	<true/>
+	<key>LSSupportsOpeningDocumentsInPlace</key>
+	<true/>
 </dict>
 </plist>

@@ -8,8 +8,26 @@ class TalkButton extends StatefulWidget {
   State<TalkButton> createState() => _TalkButtonState();
 }
 
-class _TalkButtonState extends State<TalkButton> {
+class _TalkButtonState extends State<TalkButton>
+    with SingleTickerProviderStateMixin {
   final _audioRecorder = AudioRecorderService();
+  late AnimationController _pulseController;
+
+  @override
+  void initState() {
+    super.initState();
+    // Initialize the pulse animation controller
+    _pulseController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1000),
+    )..repeat(reverse: true);
+  }
+
+  @override
+  void dispose() {
+    _pulseController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -20,17 +38,48 @@ class _TalkButtonState extends State<TalkButton> {
         onPressed: () async {
           if (!_audioRecorder.isRecording) {
             await _audioRecorder.startRecording();
+            _pulseController.repeat(reverse: true);
           } else {
             await _audioRecorder.stopRecording();
+            _pulseController.reset();
           }
-          setState(() {});
+          setState(() {}); // Trigger rebuild to reflect the updated state
         },
         style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.red,
+          backgroundColor: _audioRecorder.isRecording
+              ? Colors.red
+              : Colors.green, // Red when recording, green when not
           shape: const CircleBorder(),
           padding: EdgeInsets.zero,
         ),
-        child: const SizedBox(),
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            AnimatedBuilder(
+              animation: _pulseController,
+              builder: (context, child) {
+                return Transform.scale(
+                  scale: _audioRecorder.isRecording
+                      ? 1 + (_pulseController.value * 0.2)
+                      : 1.0,
+                  child: Container(
+                    decoration: const BoxDecoration(
+                      shape: BoxShape.circle,
+                    ),
+                  ),
+                );
+              },
+            ),
+            Text(
+              _audioRecorder.isRecording ? 'STOP' : 'TALK',
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

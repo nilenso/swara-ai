@@ -1,9 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:swara/src/services/audio_recorder.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
   static const routeName = '/';
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  final _audioRecorder = AudioRecorderService();
+  String? _recordingPath;
 
   @override
   Widget build(BuildContext context) {
@@ -33,10 +42,22 @@ class HomeScreen extends StatelessWidget {
             Expanded(
               child: Center(
                 child: SizedBox(
-                  height: 30 * 3.779527559055118, // 3cm in logical pixels
-                  width: 30 * 3.779527559055118,
+                  height: 100, // 3cm in logical pixels
+                  width: 100,
                   child: ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () async {
+                      if (_recordingPath == null) {
+                        final path = await _audioRecorder.startRecording();
+                        setState(() {
+                          _recordingPath = path;
+                        });
+                      } else {
+                        await _audioRecorder.stopRecording();
+                        setState(() {
+                          _recordingPath = null;
+                        });
+                      }
+                    },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.red,
                       shape: const CircleBorder(),

@@ -14,6 +14,8 @@ dependencies:
     sdk: flutter
   flutter_localizations:
     sdk: flutter
+  record: ^5.0.4
+  path_provider: ^2.1.2
 
 dev_dependencies:
   flutter_test:

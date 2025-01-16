@@ -4,7 +4,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'settings/settings_controller.dart';
 import 'settings/settings_view.dart';
-import 'home_screen.dart';
+import 'screens/home_screen.dart';
 
 /// The Widget that configures your application.
 class MyApp extends StatelessWidget {

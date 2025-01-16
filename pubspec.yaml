@@ -16,6 +16,7 @@ dependencies:
     sdk: flutter
   record: ^5.0.4
   path_provider: ^2.1.2
+  just_audio: ^0.9.36
 
 dev_dependencies:
   flutter_test:

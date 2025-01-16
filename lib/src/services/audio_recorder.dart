@@ -12,14 +12,13 @@ class AudioRecorderService {
 
     final appDir = await getApplicationDocumentsDirectory();
     final timestamp = DateTime.now().toIso8601String();
-    final path = '${appDir.path}/$timestamp.opus';
+    final path = '${appDir.path}/$timestamp.wav';
 
     if (await _recorder.hasPermission()) {
       try {
         await _recorder.start(
           const RecordConfig(encoder: AudioEncoder.wav),
           path: path,
-          // encoder: AudioEncoder.opus,
         );
         _isRecording = true;
         return path;

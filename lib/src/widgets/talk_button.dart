@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:swara/src/services/audio_recorder.dart';
 
-const _buttonColor = Color(0xfffd6969);
+const _buttonColor = Color(0xffdf2525);
+const _recordingButtonColor = Color(0xffab1e1e);
 const _buttonSizePercent = 0.15; // 10% of screen height
 const _animationDuration = Duration(milliseconds: 1000);
 const _pulseScaleFactor = 0.2;
@@ -12,11 +13,22 @@ class TalkButton extends StatefulWidget {
   const TalkButton({super.key, this.onTranscription});
 
   @override
-  State<TalkButton> createState() => _TalkButtonState();
+  State<TalkButton> createState() => TalkButtonState();
 }
 
-class _TalkButtonState extends State<TalkButton>
+class TalkButtonState extends State<TalkButton>
     with SingleTickerProviderStateMixin {
+  Future<void> stopRecording() async {
+    if (_audioRecorder.isRecording) {
+      final transcription = await _audioRecorder.stopRecording();
+      if (transcription != null) {
+        widget.onTranscription?.call(transcription);
+      }
+      _pulseController.reset();
+      setState(() {});
+    }
+  }
+
   final _audioRecorder = AudioRecorderService();
   late AnimationController _pulseController;
 
@@ -57,7 +69,8 @@ class _TalkButtonState extends State<TalkButton>
           setState(() {});
         },
         style: ElevatedButton.styleFrom(
-          backgroundColor: _buttonColor,
+          backgroundColor:
+              _audioRecorder.isRecording ? _recordingButtonColor : _buttonColor,
           shape: const CircleBorder(),
           padding: EdgeInsets.zero,
         ),
@@ -74,8 +87,11 @@ class _TalkButtonState extends State<TalkButton>
                   child: Container(
                     width: buttonSize,
                     height: buttonSize,
-                    decoration: const BoxDecoration(
-                        shape: BoxShape.circle, color: _buttonColor),
+                    decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: _audioRecorder.isRecording
+                            ? _recordingButtonColor
+                            : _buttonColor),
                   ),
                 );
               },

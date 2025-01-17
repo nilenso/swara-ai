@@ -16,6 +16,7 @@ class TranscriptionService {
     request.files.add(await http.MultipartFile.fromPath('file', file.path));
     request.fields['model'] = 'whisper-1';
     request.fields['temperature'] = '0.2';
+    request.fields['language'] = 'en';
 
     final response = await request.send();
     final responseBody = await response.stream.bytesToString();

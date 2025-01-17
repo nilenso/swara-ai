@@ -14,8 +14,9 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   final _chatBoxKey = GlobalKey<ChatBoxState>();
+  final _talkButtonKey = GlobalKey<TalkButtonState>();
   bool _isToggled = false;
   ChatService? _chatService;
 
@@ -23,6 +24,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     _initChatService();
+    WidgetsBinding.instance.addObserver(this);
   }
 
   void _initChatService() {
@@ -42,6 +44,20 @@ class _HomeScreenState extends State<HomeScreen> {
       } catch (e) {
         debugPrint('Chat error: $e');
       }
+    }
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.paused ||
+        state == AppLifecycleState.detached) {
+      _talkButtonKey.currentState?.stopRecording();
     }
   }
 
@@ -67,6 +83,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ChatBox(key: _chatBoxKey),
               Expanded(
                 child: TalkButton(
+                  key: _talkButtonKey,
                   onTranscription: _handleTranscription,
                 ),
               ),

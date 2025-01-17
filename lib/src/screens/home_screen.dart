@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:swara/src/services/genAI/chat_service.dart';
-import 'package:swara/src/services/genAI/env.dart';
+import 'package:swara/src/env.dart';
 import 'package:swara/src/widgets/chat_box.dart';
 import 'package:swara/src/widgets/talk_button.dart';
 import 'package:swara/src/widgets/journal_toggle.dart';

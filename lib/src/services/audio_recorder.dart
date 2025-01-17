@@ -1,6 +1,6 @@
 import 'package:record/record.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:swara/src/services/genai/env.dart';
+import 'package:swara/src/env.dart';
 import 'package:swara/src/services/genai/transcription_service.dart';
 
 class AudioRecorderService {

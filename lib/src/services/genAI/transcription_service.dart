@@ -15,7 +15,7 @@ class TranscriptionService {
     request.headers['Authorization'] = 'Bearer $apiKey';
     request.files.add(await http.MultipartFile.fromPath('file', file.path));
     request.fields['model'] = 'whisper-1';
-    request.fields['temperature'] = 0.2;
+    request.fields['temperature'] = '0.2';
 
     final response = await request.send();
     final responseBody = await response.stream.bytesToString();
@@ -29,10 +29,12 @@ class TranscriptionService {
       await transcriptionDir.create();
     }
 
-    final timestamp = DateTime.now().millisecondsSinceEpoch;
-    final jsonFile = File('${transcriptionDir.path}/$timestamp.json');
-    await jsonFile.writeAsString(responseBody);
+    final audioFileName =
+        file.path.split('/').last.replaceAll(RegExp(r'\.[^\.]+$'), '');
+    final jsonFile = File('${transcriptionDir.path}/$audioFileName.json');
+    final transcriptedText = jsonDecode(responseBody)['text'];
+    await jsonFile.writeAsString(transcriptedText);
 
-    return jsonDecode(responseBody)['text'];
+    return transcriptedText;
   }
 }

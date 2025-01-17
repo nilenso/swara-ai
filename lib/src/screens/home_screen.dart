@@ -16,18 +16,28 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-        child: Column(
-          children: [
-            ChatBox(key: _chatBoxKey),
-            Expanded(
-              child: TalkButton(
-                onTranscription: (text) =>
-                    _chatBoxKey.currentState?.addTranscription(text),
+    return Container(
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [Color(0xfff4f2e0), Color(0xffeba7b1)],
+        ),
+      ),
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: SafeArea(
+          child: Column(
+            children: [
+              ChatBox(key: _chatBoxKey),
+              Expanded(
+                child: TalkButton(
+                  onTranscription: (text) =>
+                      _chatBoxKey.currentState?.addTranscription(text),
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

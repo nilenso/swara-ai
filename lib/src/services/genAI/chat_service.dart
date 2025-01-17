@@ -4,10 +4,12 @@ import 'package:http/http.dart' as http;
 class ChatService {
   final String apiKey;
   final String baseUrl = 'https://api.openai.com/v1/chat/completions';
+  static const defaultPrompt =
+      'You are a helpful coach and assistant. Be kind and keep your responses short.';
 
   ChatService({required this.apiKey});
 
-  Future<String> chat(String input) async {
+  Future<String> chat(String input, {String? developerPrompt}) async {
     final request = http.Request('POST', Uri.parse(baseUrl));
 
     request.headers['Authorization'] = 'Bearer $apiKey';
@@ -16,11 +18,7 @@ class ChatService {
     final body = {
       'model': 'gpt-3.5-turbo',
       'messages': [
-        {
-          'role': 'developer',
-          'content':
-              'You are a helpful coach and assistant. Be kind and keep your responses short.'
-        },
+        {'role': 'developer', 'content': developerPrompt ?? defaultPrompt},
         {'role': 'user', 'content': input}
       ],
       'temperature': 0.7,

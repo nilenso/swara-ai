@@ -1,14 +1,18 @@
 import 'package:record/record.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:swara/src/services/genai/env.dart';
+import 'package:swara/src/services/genai/transcription_service.dart';
 
 class AudioRecorderService {
   final _recorder = AudioRecorder();
+  final _transcriptionService = TranscriptionService(apiKey: Env.openaiApiKey);
   bool _isRecording = false;
+  String? _currentPath;
 
   bool get isRecording => _isRecording;
 
   Future<String?> startRecording() async {
-    if (_isRecording) return null;
+    if (_isRecording || _currentPath != null) return null;
 
     final appDir = await getApplicationDocumentsDirectory();
     final timestamp = DateTime.now().toIso8601String();
@@ -21,7 +25,8 @@ class AudioRecorderService {
           path: path,
         );
         _isRecording = true;
-        return path;
+        _currentPath = path;
+        return _currentPath;
       } catch (e) {
         _isRecording = false;
         return null;
@@ -30,14 +35,20 @@ class AudioRecorderService {
     return null;
   }
 
-  Future<void> stopRecording() async {
-    if (!_isRecording) return;
+  Future<String?> stopRecording() async {
+    if (!_isRecording || _currentPath == null) return null;
 
     try {
       await _recorder.stop();
       _isRecording = false;
+
+      final transcription =
+          await _transcriptionService.transcribe(_currentPath!);
+      _currentPath = null;
+      return transcription;
     } catch (e) {
-      // Handle error
+      _currentPath = null;
+      return null;
     }
   }
 }

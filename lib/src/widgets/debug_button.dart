@@ -7,9 +7,9 @@ class DebugButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return IconButton(
-      icon: const Icon(Icons.bug_report),
-      onPressed: onPressed,
+    return GestureDetector(
+      onTap: onPressed,
+      child: const Text('Summarize', style: TextStyle(fontSize: 12)),
     );
   }
 }

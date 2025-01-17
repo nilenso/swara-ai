@@ -37,7 +37,7 @@ class SummaryService {
     return _chatService.chat(
       transcriptionsText,
       developerPrompt:
-          'You are a summarizer. Given a list of timestamped transcriptions, create a concise, succint summary highlighting key points and patterns.  Address the user as you, as if you are talking to them in person. Make sure to end with any tasks or reminders which the user has mentioned',
+          'You are my mental health coach. Given a list of my timesetamped messages, create a concise summary to keep track of key events and patterns as well as my mood. Talk to me in first person, say "you" instead of user. Make sure to end with any tasks or reminders which were mentioned. Use bullet points for just these reminders',
     );
   }
 

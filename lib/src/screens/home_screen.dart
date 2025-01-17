@@ -15,9 +15,7 @@ class HomeScreen extends StatelessWidget {
           children: [
             ChatBox(),
             Expanded(
-              child: Center(
-                child: TalkButton(),
-              ),
+              child: TalkButton(),
             ),
           ],
         ),

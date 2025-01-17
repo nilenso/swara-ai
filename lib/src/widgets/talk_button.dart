@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:swara/src/services/audio_recorder.dart';
 
+const _buttonColor = Color(0xfffd6969);
+const _buttonSize = 100.0;
+const _animationDuration = Duration(milliseconds: 1000);
+const _pulseScaleFactor = 0.2;
+
 class TalkButton extends StatefulWidget {
   const TalkButton({super.key});
 
@@ -12,7 +17,6 @@ class _TalkButtonState extends State<TalkButton>
     with SingleTickerProviderStateMixin {
   final _audioRecorder = AudioRecorderService();
   late AnimationController _pulseController;
-  String? _currentFilePath;
 
   @override
   void initState() {
@@ -20,7 +24,7 @@ class _TalkButtonState extends State<TalkButton>
     // Initialize the pulse animation controller
     _pulseController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 1000),
+      duration: _animationDuration,
     )..repeat(reverse: true);
   }
 
@@ -33,12 +37,12 @@ class _TalkButtonState extends State<TalkButton>
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 100,
-      width: 100,
+      height: _buttonSize,
+      width: _buttonSize,
       child: ElevatedButton(
         onPressed: () async {
           if (!_audioRecorder.isRecording) {
-            _currentFilePath = await _audioRecorder.startRecording();
+            await _audioRecorder.startRecording();
             _pulseController.repeat(reverse: true);
           } else {
             await _audioRecorder.stopRecording();
@@ -47,9 +51,7 @@ class _TalkButtonState extends State<TalkButton>
           setState(() {});
         },
         style: ElevatedButton.styleFrom(
-          backgroundColor: _audioRecorder.isRecording
-              ? Colors.red
-              : Colors.green, // Red when recording, green when not
+          backgroundColor: _buttonColor,
           shape: const CircleBorder(),
           padding: EdgeInsets.zero,
         ),
@@ -61,12 +63,13 @@ class _TalkButtonState extends State<TalkButton>
               builder: (context, child) {
                 return Transform.scale(
                   scale: _audioRecorder.isRecording
-                      ? 1 + (_pulseController.value * 0.2)
+                      ? 1 + (_pulseController.value * _pulseScaleFactor)
                       : 1.0,
                   child: Container(
-                    decoration: const BoxDecoration(
-                      shape: BoxShape.circle,
-                    ),
+                    width: _buttonSize,
+                    height: _buttonSize,
+                    decoration: BoxDecoration(
+                        shape: BoxShape.circle, color: _buttonColor),
                   ),
                 );
               },

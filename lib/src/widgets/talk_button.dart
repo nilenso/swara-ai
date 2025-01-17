@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:swara/src/services/audio_recorder.dart';
 
 const _buttonColor = Color(0xfffd6969);
-const _buttonSize = 100.0;
+const _buttonSizePercent = 0.15; // 10% of screen height
 const _animationDuration = Duration(milliseconds: 1000);
 const _pulseScaleFactor = 0.2;
 
@@ -38,9 +38,10 @@ class _TalkButtonState extends State<TalkButton>
 
   @override
   Widget build(BuildContext context) {
+    final buttonSize = MediaQuery.of(context).size.height * _buttonSizePercent;
     return SizedBox(
-      height: _buttonSize,
-      width: _buttonSize,
+      height: buttonSize,
+      width: buttonSize,
       child: ElevatedButton(
         onPressed: () async {
           if (!_audioRecorder.isRecording) {
@@ -71,9 +72,9 @@ class _TalkButtonState extends State<TalkButton>
                       ? 1 + (_pulseController.value * _pulseScaleFactor)
                       : 1.0,
                   child: Container(
-                    width: _buttonSize,
-                    height: _buttonSize,
-                    decoration: BoxDecoration(
+                    width: buttonSize,
+                    height: buttonSize,
+                    decoration: const BoxDecoration(
                         shape: BoxShape.circle, color: _buttonColor),
                   ),
                 );

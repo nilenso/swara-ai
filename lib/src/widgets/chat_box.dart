@@ -33,12 +33,13 @@ class ChatBoxState extends State<ChatBox> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: MediaQuery.of(context).size.height * 0.75,
+      height: MediaQuery.of(context).size.height * 0.66,
       child: Scrollbar(
         thumbVisibility: false,
         child: SingleChildScrollView(
           child: TextField(
             maxLines: null,
+            readOnly: true,
             controller: _controller,
             decoration: const InputDecoration(
               border: InputBorder.none,

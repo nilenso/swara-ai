@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:swara/src/widgets/chat_box.dart';
 import 'package:swara/src/widgets/talk_button.dart';
+import 'package:swara/src/widgets/journal_toggle.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -13,6 +14,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final _chatBoxKey = GlobalKey<ChatBoxState>();
+  bool _isToggled = false;
 
   @override
   Widget build(BuildContext context) {
@@ -29,6 +31,10 @@ class _HomeScreenState extends State<HomeScreen> {
         body: SafeArea(
           child: Column(
             children: [
+              JournalToggle(
+                value: _isToggled,
+                onChanged: (value) => setState(() => _isToggled = value),
+              ),
               ChatBox(key: _chatBoxKey),
               Expanded(
                 child: TalkButton(

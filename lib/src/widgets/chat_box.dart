@@ -26,7 +26,13 @@ class ChatBoxState extends State<ChatBox> {
 
   void addTranscription(String transcription) {
     setState(() {
-      _controller.text = "${_controller.text}\n\n$transcription";
+      _controller.text = "${_controller.text}\n$transcription";
+    });
+  }
+
+  void addChatResponse(String response) {
+    setState(() {
+      _controller.text = "${_controller.text}\nSwara: $response";
     });
   }
 

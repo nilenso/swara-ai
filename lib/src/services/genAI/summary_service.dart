@@ -1,7 +1,11 @@
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
+import 'package:swara/src/services/genAI/chat_service.dart';
+import 'package:swara/src/env.dart';
 
 class SummaryService {
+  final _chatService = ChatService(apiKey: Env.openaiApiKey);
+
   Future<String> getSummary(DateTime start, DateTime end) async {
     final appDir = await getApplicationDocumentsDirectory();
     final transcriptionDir = Directory('${appDir.path}/transcriptions');
@@ -15,19 +19,26 @@ class SummaryService {
         .toList();
     files.sort((a, b) => a.path.compareTo(b.path));
 
-    final summaryEntries = <String>[];
+    final transcriptionEntries = <String>[];
     for (final file in files) {
       final timestamp = _getTimestampFromFileName(file.path);
       if (timestamp != null &&
           timestamp.isAfter(start) &&
           timestamp.isBefore(end)) {
         final content = await File(file.path).readAsString();
-        summaryEntries.add('${timestamp.toIso8601String()}: $content');
+        transcriptionEntries.add('${timestamp.toIso8601String()}: $content');
       }
     }
 
-    summaryEntries.sort();
-    return summaryEntries.join('\n');
+    transcriptionEntries.sort();
+    final transcriptionsText = transcriptionEntries.join('\n');
+    if (transcriptionsText.isEmpty) return '';
+
+    return _chatService.chat(
+      transcriptionsText,
+      developerPrompt:
+          'You are a summarizer. Given a list of timestamped transcriptions, create a concise, succint summary highlighting key points and patterns.  Address the user as you, as if you are talking to them in person. Make sure to end with any tasks or reminders which the user has mentioned',
+    );
   }
 
   DateTime? _getTimestampFromFileName(String path) {

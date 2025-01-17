@@ -95,7 +95,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                     now.subtract(const Duration(hours: 1)),
                     now,
                   );
-                  // _chatBoxKey.currentState?.addTranscription(summary);
+                  _chatBoxKey.currentState?.addTranscription(summary);
                 },
               ),
               ChatBox(key: _chatBoxKey),

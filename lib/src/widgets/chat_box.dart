@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class ChatBox extends StatefulWidget {
   const ChatBox({super.key});
@@ -52,6 +53,7 @@ class ChatBoxState extends State<ChatBox> {
         scrollController: _scrollController,
         maxLines: null,
         readOnly: true,
+        style: GoogleFonts.ptSans(),
         decoration: const InputDecoration(
           border: InputBorder.none,
           contentPadding: EdgeInsets.all(16),

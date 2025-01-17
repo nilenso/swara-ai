@@ -19,6 +19,7 @@ dependencies:
   just_audio: ^0.9.36
   http: ^1.2.1
   flutter_dotenv: ^5.1.0
+  google_fonts: ^6.1.0
 
 dev_dependencies:
   flutter_test:

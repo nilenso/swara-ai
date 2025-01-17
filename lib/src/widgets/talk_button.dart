@@ -7,7 +7,9 @@ const _animationDuration = Duration(milliseconds: 1000);
 const _pulseScaleFactor = 0.2;
 
 class TalkButton extends StatefulWidget {
-  const TalkButton({super.key});
+  final void Function(String)? onTranscription;
+
+  const TalkButton({super.key, this.onTranscription});
 
   @override
   State<TalkButton> createState() => _TalkButtonState();
@@ -45,7 +47,10 @@ class _TalkButtonState extends State<TalkButton>
             await _audioRecorder.startRecording();
             _pulseController.repeat(reverse: true);
           } else {
-            await _audioRecorder.stopRecording();
+            final transcription = await _audioRecorder.stopRecording();
+            if (transcription != null) {
+              widget.onTranscription?.call(transcription);
+            }
             _pulseController.reset();
           }
           setState(() {});

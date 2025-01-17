@@ -24,6 +24,7 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^3.0.0
+  flutter_launcher_icons: ^0.13.1
 
 flutter:
   uses-material-design: true
@@ -35,3 +36,9 @@ flutter:
     # Add assets from the images directory to the application.
     - assets/images/
     - .env
+
+
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "assets/icons/swara_logo.png" # Path to your app icon

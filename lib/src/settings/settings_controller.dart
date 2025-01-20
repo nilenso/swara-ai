@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import '../models/checkin.dart';
 import 'settings_service.dart';
 
 /// A class that many Widgets can interact with to read user settings, update
@@ -16,21 +16,17 @@ class SettingsController with ChangeNotifier {
   // Make ThemeMode a private variable so it is not updated directly without
   // also persisting the changes with the SettingsService.
   late ThemeMode _themeMode;
-  List<TimeOfDay> _checkInTimes = [];
+  List<Checkin> _checkins = [];
 
   ThemeMode get themeMode => _themeMode;
-  List<TimeOfDay> get checkInTimes => List.unmodifiable(_checkInTimes);
+  List<Checkin> get checkins => List.unmodifiable(_checkins);
 
   /// Load the user's settings from the SettingsService. It may load from a
   /// local database or the internet. The controller only knows it can load the
   /// settings from the service.
   Future<void> loadSettings() async {
     _themeMode = await _settingsService.themeMode();
-    final times = await _settingsService.checkInTimes();
-    _checkInTimes = times.map((t) {
-      final parts = t.split(':');
-      return TimeOfDay(hour: int.parse(parts[0]), minute: int.parse(parts[1]));
-    }).toList();
+    _checkins = await _settingsService.getCheckins();
     notifyListeners();
   }
 
@@ -52,25 +48,14 @@ class SettingsController with ChangeNotifier {
     await _settingsService.updateThemeMode(newThemeMode);
   }
 
-  Future<void> addCheckIn(TimeOfDay time) async {
-    _checkInTimes.add(time);
-    _checkInTimes
-        .sort((a, b) => a.hour * 60 + a.minute - (b.hour * 60 + b.minute));
-    notifyListeners();
-    await _saveCheckInTimes();
-  }
-
-  Future<void> deleteCheckIn(int index) async {
-    _checkInTimes.removeAt(index);
-    notifyListeners();
-    await _saveCheckInTimes();
-  }
-
-  Future<void> _saveCheckInTimes() async {
-    final times = _checkInTimes
-        .map((t) =>
-            '${t.hour.toString().padLeft(2, '0')}:${t.minute.toString().padLeft(2, '0')}')
-        .toList();
-    await _settingsService.updateCheckInTimes(times);
+  Future<void> addCheckin(DateTime time, String note) async {
+    try {
+      final checkin = Checkin(time: time, note: note);
+      await _settingsService.addCheckin(checkin);
+      _checkins = await _settingsService.getCheckins();
+      notifyListeners();
+    } catch (e) {
+      rethrow;
+    }
   }
 }

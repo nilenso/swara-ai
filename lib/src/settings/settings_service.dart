@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import '../models/checkin.dart';
 
 /// A service that stores and retrieves user settings.
+const String checkinBoxName = 'checkins';
+
 ///
 /// By default, this class does not persist user settings. If you'd like to
 /// persist the user settings locally, use the shared_preferences package. If
@@ -9,14 +13,23 @@ class SettingsService {
   /// Loads the User's preferred ThemeMode from local or remote storage.
   Future<ThemeMode> themeMode() async => ThemeMode.system;
 
-  Future<List<String>> checkInTimes() async => [];
+  Future<List<Checkin>> getCheckins() async {
+    final box = await Hive.openBox<Checkin>(checkinBoxName);
+    return box.values.toList();
+  }
 
   Future<void> updateThemeMode(ThemeMode theme) async {
     // Use the shared_preferences package to persist settings locally or the
     // http package to persist settings over the network.
   }
 
-  Future<void> updateCheckInTimes(List<String> times) async {
-    // Persist check-in times
+  Future<void> addCheckin(Checkin checkin) async {
+    final box = await Hive.openBox<Checkin>(checkinBoxName);
+    if (box.values.any((c) =>
+        c.time.hour == checkin.time.hour &&
+        c.time.minute == checkin.time.minute)) {
+      throw Exception('You already have a check-in at this time');
+    }
+    await box.add(checkin);
   }
 }

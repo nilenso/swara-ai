@@ -47,22 +47,34 @@ class SettingsView extends StatelessWidget {
                         initialTime: TimeOfDay.now(),
                       );
                       if (time != null) {
-                        await controller.addCheckIn(time);
+                        final now = DateTime.now();
+                        final dateTime = DateTime(
+                          now.year,
+                          now.month,
+                          now.day,
+                          time.hour,
+                          time.minute,
+                        );
+                        try {
+                          await controller.addCheckin(dateTime, '');
+                        } catch (e) {
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text(e.toString())),
+                            );
+                          }
+                        }
                       }
                     },
                   ),
                 ],
               ),
             ),
-            ...controller.checkInTimes.asMap().entries.map((entry) {
-              final index = entry.key;
-              final time = entry.value;
+            ...controller.checkins.map((checkin) {
               return ListTile(
-                title: Text(time.format(context)),
-                trailing: IconButton(
-                  icon: const Icon(Icons.delete),
-                  onPressed: () => controller.deleteCheckIn(index),
-                ),
+                title:
+                    Text(TimeOfDay.fromDateTime(checkin.time).format(context)),
+                subtitle: Text(checkin.note),
               );
             }).toList(),
             // const Divider(),

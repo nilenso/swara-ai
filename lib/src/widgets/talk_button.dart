@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:swara/src/services/audio_recorder.dart';
+import 'package:swara/src/env.dart';
+import 'package:swara/src/services/genai/transcription_service.dart';
 
 const _buttonColor = Color(0xffdf2525);
 const _recordingButtonColor = Color(0xffab1e1e);
@@ -18,14 +20,18 @@ class TalkButton extends StatefulWidget {
 
 class TalkButtonState extends State<TalkButton>
     with SingleTickerProviderStateMixin {
+  final _transcriptionService = TranscriptionService(apiKey: Env.openaiApiKey);
   Future<void> stopRecording() async {
     if (_audioRecorder.isRecording) {
-      final transcription = await _audioRecorder.stopRecording();
-      if (transcription != null) {
-        widget.onTranscription?.call(transcription);
-      }
+      final path = await _audioRecorder.stopRecording();
       _pulseController.reset();
       setState(() {});
+
+      if (path != null) {
+        _transcriptionService.transcribe(path).then((transcription) {
+          widget.onTranscription?.call(transcription);
+        });
+      }
     }
   }
 
@@ -60,11 +66,7 @@ class TalkButtonState extends State<TalkButton>
             await _audioRecorder.startRecording();
             _pulseController.repeat(reverse: true);
           } else {
-            final transcription = await _audioRecorder.stopRecording();
-            if (transcription != null) {
-              widget.onTranscription?.call(transcription);
-            }
-            _pulseController.reset();
+            await stopRecording();
           }
           setState(() {});
         },

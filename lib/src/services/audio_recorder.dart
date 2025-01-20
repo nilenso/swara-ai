@@ -1,11 +1,8 @@
 import 'package:record/record.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:swara/src/env.dart';
-import 'package:swara/src/services/genai/transcription_service.dart';
 
 class AudioRecorderService {
   final _recorder = AudioRecorder();
-  final _transcriptionService = TranscriptionService(apiKey: Env.openaiApiKey);
   bool _isRecording = false;
   String? _currentPath;
 
@@ -41,11 +38,9 @@ class AudioRecorderService {
     try {
       await _recorder.stop();
       _isRecording = false;
-
-      final transcription =
-          await _transcriptionService.transcribe(_currentPath!);
+      final path = _currentPath;
       _currentPath = null;
-      return transcription;
+      return path;
     } catch (e) {
       _currentPath = null;
       return null;

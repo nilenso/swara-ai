@@ -84,9 +84,28 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         body: SafeArea(
           child: Column(
             children: [
-              JournalToggle(
-                value: _isToggled,
-                onChanged: (value) => setState(() => _isToggled = value),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Spacer(),
+                    JournalToggle(
+                      value: _isToggled,
+                      onChanged: (value) => setState(() => _isToggled = value),
+                    ),
+                    Expanded(
+                      child: Align(
+                        alignment: Alignment.centerRight,
+                        child: IconButton(
+                          icon: const Icon(Icons.settings),
+                          onPressed: () =>
+                              Navigator.pushNamed(context, '/settings'),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
               DebugButton(
                 onPressed: () async {

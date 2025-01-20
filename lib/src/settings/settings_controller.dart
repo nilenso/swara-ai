@@ -16,17 +16,21 @@ class SettingsController with ChangeNotifier {
   // Make ThemeMode a private variable so it is not updated directly without
   // also persisting the changes with the SettingsService.
   late ThemeMode _themeMode;
+  List<TimeOfDay> _checkInTimes = [];
 
-  // Allow Widgets to read the user's preferred ThemeMode.
   ThemeMode get themeMode => _themeMode;
+  List<TimeOfDay> get checkInTimes => List.unmodifiable(_checkInTimes);
 
   /// Load the user's settings from the SettingsService. It may load from a
   /// local database or the internet. The controller only knows it can load the
   /// settings from the service.
   Future<void> loadSettings() async {
     _themeMode = await _settingsService.themeMode();
-
-    // Important! Inform listeners a change has occurred.
+    final times = await _settingsService.checkInTimes();
+    _checkInTimes = times.map((t) {
+      final parts = t.split(':');
+      return TimeOfDay(hour: int.parse(parts[0]), minute: int.parse(parts[1]));
+    }).toList();
     notifyListeners();
   }
 
@@ -46,5 +50,27 @@ class SettingsController with ChangeNotifier {
     // Persist the changes to a local database or the internet using the
     // SettingService.
     await _settingsService.updateThemeMode(newThemeMode);
+  }
+
+  Future<void> addCheckIn(TimeOfDay time) async {
+    _checkInTimes.add(time);
+    _checkInTimes
+        .sort((a, b) => a.hour * 60 + a.minute - (b.hour * 60 + b.minute));
+    notifyListeners();
+    await _saveCheckInTimes();
+  }
+
+  Future<void> deleteCheckIn(int index) async {
+    _checkInTimes.removeAt(index);
+    notifyListeners();
+    await _saveCheckInTimes();
+  }
+
+  Future<void> _saveCheckInTimes() async {
+    final times = _checkInTimes
+        .map((t) =>
+            '${t.hour.toString().padLeft(2, '0')}:${t.minute.toString().padLeft(2, '0')}')
+        .toList();
+    await _settingsService.updateCheckInTimes(times);
   }
 }

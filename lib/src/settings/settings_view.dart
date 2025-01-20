@@ -16,9 +16,6 @@ class SettingsView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Settings'),
-      ),
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
@@ -72,9 +69,17 @@ class SettingsView extends StatelessWidget {
             ),
             ...controller.checkins.map((checkin) {
               return ListTile(
-                title:
-                    Text(TimeOfDay.fromDateTime(checkin.time).format(context)),
-                subtitle: Text(checkin.note),
+                dense: true,
+                title: Text(
+                  TimeOfDay.fromDateTime(checkin.time).format(context),
+                  style: const TextStyle(fontSize: 24),
+                ),
+                trailing: IconButton(
+                  icon: const Icon(Icons.delete, size: 24),
+                  onPressed: () => controller.deleteCheckin(checkin),
+                ),
+                enableFeedback: true,
+                minVerticalPadding: 0,
               );
             }).toList(),
             // const Divider(),

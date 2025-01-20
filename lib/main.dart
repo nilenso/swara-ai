@@ -3,7 +3,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 import 'src/app.dart';
-import 'src/models/checkin.dart';R
+import 'src/models/checkin.dart';
 import 'src/settings/settings_controller.dart';
 import 'src/settings/settings_service.dart';
 

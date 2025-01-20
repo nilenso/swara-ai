@@ -15,7 +15,9 @@ class SettingsService {
 
   Future<List<Checkin>> getCheckins() async {
     final box = await Hive.openBox<Checkin>(checkinBoxName);
-    return box.values.toList();
+    final checkins = box.values.toList();
+    checkins.sort((a, b) => a.time.compareTo(b.time));
+    return checkins;
   }
 
   Future<void> updateThemeMode(ThemeMode theme) async {
@@ -31,5 +33,16 @@ class SettingsService {
       throw Exception('You already have a check-in at this time');
     }
     await box.add(checkin);
+  }
+
+  Future<void> deleteCheckin(Checkin checkin) async {
+    final box = await Hive.openBox<Checkin>(checkinBoxName);
+    final entry = box.values.firstWhere(
+      (c) =>
+          c.time.hour == checkin.time.hour &&
+          c.time.minute == checkin.time.minute,
+    );
+    final key = box.keyAt(box.values.toList().indexOf(entry));
+    await box.delete(key);
   }
 }

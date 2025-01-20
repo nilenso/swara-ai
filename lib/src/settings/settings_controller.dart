@@ -58,4 +58,10 @@ class SettingsController with ChangeNotifier {
       rethrow;
     }
   }
+
+  Future<void> deleteCheckin(Checkin checkin) async {
+    await _settingsService.deleteCheckin(checkin);
+    _checkins = await _settingsService.getCheckins();
+    notifyListeners();
+  }
 }

@@ -6,19 +6,13 @@ import 'src/app.dart';
 import 'src/models/checkin.dart';
 import 'src/models/time_of_day_adapter.dart';
 import 'src/settings/settings_controller.dart';
-import 'src/settings/settings_service.dart'
-    show SettingsService, checkinBoxName;
+import 'src/settings/settings_service.dart';
 
 void main() async {
   await dotenv.load(fileName: ".env");
   WidgetsFlutterBinding.ensureInitialized();
 
   await Hive.initFlutter();
-
-  // Close and delete existing box before registering new adapters
-  if (Hive.isBoxOpen(checkinBoxName)) {
-    await Hive.box(checkinBoxName).close();
-  }
 
   Hive.registerAdapter(TimeOfDayAdapter());
   Hive.registerAdapter(CheckinAdapter());

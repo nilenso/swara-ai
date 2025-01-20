@@ -16,7 +16,12 @@ class SettingsService {
   Future<List<Checkin>> getCheckins() async {
     final box = await Hive.openBox<Checkin>(checkinBoxName);
     final checkins = box.values.toList();
-    checkins.sort((a, b) => a.time.compareTo(b.time));
+    checkins.sort((a, b) {
+      if (a.time.hour != b.time.hour) {
+        return a.time.hour.compareTo(b.time.hour);
+      }
+      return a.time.minute.compareTo(b.time.minute);
+    });
     return checkins;
   }
 

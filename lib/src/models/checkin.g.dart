@@ -17,7 +17,7 @@ class CheckinAdapter extends TypeAdapter<Checkin> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return Checkin(
-      time: fields[0] as DateTime,
+      time: fields[0] as TimeOfDay,
       note: fields[1] as String,
     );
   }

@@ -48,7 +48,7 @@ class SettingsController with ChangeNotifier {
     await _settingsService.updateThemeMode(newThemeMode);
   }
 
-  Future<void> addCheckin(DateTime time, String note) async {
+  Future<void> addCheckin(TimeOfDay time, String note) async {
     try {
       final checkin = Checkin(time: time, note: note);
       await _settingsService.addCheckin(checkin);

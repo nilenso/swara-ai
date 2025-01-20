@@ -44,16 +44,16 @@ class SettingsView extends StatelessWidget {
                         initialTime: TimeOfDay.now(),
                       );
                       if (time != null) {
-                        final now = DateTime.now();
-                        final dateTime = DateTime(
-                          now.year,
-                          now.month,
-                          now.day,
-                          time.hour,
-                          time.minute,
-                        );
+                        // final now = DateTime.now();
+                        // final dateTime = DateTime(
+                        //   now.year,
+                        //   now.month,
+                        //   now.day,
+                        //   time.hour,
+                        //   time.minute,
+                        // );
                         try {
-                          await controller.addCheckin(dateTime, '');
+                          await controller.addCheckin(time, '');
                         } catch (e) {
                           if (context.mounted) {
                             ScaffoldMessenger.of(context).showSnackBar(
@@ -71,7 +71,7 @@ class SettingsView extends StatelessWidget {
               return ListTile(
                 dense: true,
                 title: Text(
-                  TimeOfDay.fromDateTime(checkin.time).format(context),
+                  checkin.time.format(context),
                   style: const TextStyle(fontSize: 24),
                 ),
                 trailing: IconButton(

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../widgets/checkins.dart';
 import 'settings_controller.dart';
 
 /// Displays the various settings that can be customized by the user.
@@ -36,86 +37,8 @@ class SettingsView extends StatelessWidget {
         ),
         body: ListView(
           children: [
-            // Checkins Section
-            Padding(
-              padding: EdgeInsets.all(16.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text(
-                    'Checkins',
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.add),
-                    onPressed: () async {
-                      final TimeOfDay? time = await showTimePicker(
-                        context: context,
-                        initialTime: TimeOfDay.now(),
-                      );
-                      if (time != null) {
-                        // final now = DateTime.now();
-                        // final dateTime = DateTime(
-                        //   now.year,
-                        //   now.month,
-                        //   now.day,
-                        //   time.hour,
-                        //   time.minute,
-                        // );
-                        try {
-                          await controller.addCheckin(time, '');
-                        } catch (e) {
-                          if (context.mounted) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text(e.toString())),
-                            );
-                          }
-                        }
-                      }
-                    },
-                  ),
-                ],
-              ),
-            ),
-            ...controller.checkins.map((checkin) {
-              return ListTile(
-                dense: true,
-                title: Text(
-                  checkin.time.format(context),
-                  style: const TextStyle(fontSize: 24),
-                ),
-                trailing: IconButton(
-                  icon: const Icon(Icons.delete, size: 24),
-                  onPressed: () => controller.deleteCheckin(checkin),
-                ),
-                enableFeedback: true,
-                minVerticalPadding: 0,
-              );
-            }).toList(),
+            Checkins(controller: controller),
             // const Divider(),
-            // Theme Selection
-
-            // Padding(
-            //   padding: const EdgeInsets.all(16),
-            //   child: DropdownButton<ThemeMode>(
-            //     value: controller.themeMode,
-            //     onChanged: controller.updateThemeMode,
-            //     items: const [
-            //       DropdownMenuItem(
-            //         value: ThemeMode.system,
-            //         child: Text('System Theme'),
-            //       ),
-            //       DropdownMenuItem(
-            //         value: ThemeMode.light,
-            //         child: Text('Light Theme'),
-            //       ),
-            //       DropdownMenuItem(
-            //         value: ThemeMode.dark,
-            //         child: Text('Dark Theme'),
-            //       )
-            //     ],
-            //   ),
-            // ),
           ],
         ),
       ),

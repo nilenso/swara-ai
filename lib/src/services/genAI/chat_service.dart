@@ -16,7 +16,7 @@ class ChatService {
     request.headers['Content-Type'] = 'application/json';
 
     final body = {
-      'model': 'gpt-3.5-turbo',
+      'model': 'gpt-4o-mini',
       'messages': [
         {'role': 'developer', 'content': developerPrompt ?? defaultPrompt},
         {'role': 'user', 'content': input}

@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 import 'package:swara/src/services/genAI/chat_service.dart';
 import 'package:swara/src/env.dart';
+import 'package:swara/src/widgets/developer_prompts.dart';
 
 class SummaryService {
   final _chatService = ChatService(apiKey: Env.openaiApiKey);
@@ -36,8 +37,7 @@ class SummaryService {
 
     return _chatService.chat(
       transcriptionsText,
-      developerPrompt:
-          'You are my mental health coach. Given a list of my timesetamped messages, create a concise summary to keep track of key events and patterns as well as my mood. Talk to me in first person, say "you" instead of user. Make sure to end with any tasks or reminders which were mentioned. Use bullet points for just these reminders',
+      developerPrompt: DeveloperPrompts.defaultSummarizerPrompt,
     );
   }
 

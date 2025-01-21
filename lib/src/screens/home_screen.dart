@@ -6,6 +6,7 @@ import 'package:swara/src/widgets/chat_box.dart';
 import 'package:swara/src/widgets/talk_button.dart';
 import 'package:swara/src/widgets/journal_toggle.dart';
 import 'package:swara/src/widgets/debug_button.dart';
+import 'package:swara/src/widgets/developer_prompts.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -44,9 +45,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       try {
         final response = await _chatService!.chat(
           text,
-          developerPrompt: _isToggled
-              ? 'You are a therapist. Help the user process their thoughts and feelings. Keep responses short and empathetic.'
-              : null,
+          developerPrompt:
+              _isToggled ? DeveloperPrompts.defaultDiscussPrompt : null,
         );
         _chatBoxKey.currentState?.addChatResponse(response);
       } catch (e) {

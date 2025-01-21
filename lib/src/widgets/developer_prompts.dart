@@ -15,7 +15,7 @@ class DeveloperPrompts extends StatefulWidget {
   });
 
   static const defaultSummarizerPrompt =
-      'You are my mental health coach. Given a list of my timesetamped messages, create a concise summary to keep track of key events and patterns as well as my mood. Talk to me in first person, say "you" instead of user. Make sure to end with any tasks or reminders which were mentioned. Use bullet points for just these reminders';
+      'You are my mental health coach. Given a list of my timestamped messages, create a concise summary to keep track of key events and patterns as well as my mood. Talk to me in first person, say "you" instead of user. Make sure to end with any tasks or reminders which were mentioned. Use bullet points for just these reminders';
   static const defaultDiscussPrompt =
       'You are a helpful coach and assistant. Be kind and keep your responses short.';
 
@@ -55,6 +55,7 @@ class _DeveloperPromptsState extends State<DeveloperPrompts> {
         const Text('Developer Prompts', style: TextStyle(fontSize: 16)),
         const SizedBox(height: 8),
         TextField(
+          style: const TextStyle(fontSize: 14),
           controller: summarizerPromptController,
           decoration: const InputDecoration(
             labelText: 'Summarizer Prompt',
@@ -65,6 +66,7 @@ class _DeveloperPromptsState extends State<DeveloperPrompts> {
         ),
         const SizedBox(height: 16),
         TextField(
+          style: const TextStyle(fontSize: 14),
           controller: discussPromptController,
           decoration: const InputDecoration(
             labelText: 'Discuss Prompt',

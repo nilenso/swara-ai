@@ -2,7 +2,7 @@ import 'package:record/record.dart';
 import 'package:path_provider/path_provider.dart';
 
 class AudioRecorderService {
-  final _recorder = AudioRecorder();
+  final _recorder = Record();
   bool _isRecording = false;
   String? _currentPath;
 
@@ -18,8 +18,8 @@ class AudioRecorderService {
     if (await _recorder.hasPermission()) {
       try {
         await _recorder.start(
-          const RecordConfig(encoder: AudioEncoder.wav),
           path: path,
+          encoder: AudioEncoder.wav,
         );
         _isRecording = true;
         _currentPath = path;

@@ -17,9 +17,13 @@ class SettingsController with ChangeNotifier {
   // also persisting the changes with the SettingsService.
   late ThemeMode _themeMode;
   List<Checkin> _checkins = [];
+  String _summarizerPrompt = '';
+  String _discussPrompt = '';
 
   ThemeMode get themeMode => _themeMode;
   List<Checkin> get checkins => List.unmodifiable(_checkins);
+  String get summarizerPrompt => _summarizerPrompt;
+  String get discussPrompt => _discussPrompt;
 
   /// Load the user's settings from the SettingsService. It may load from a
   /// local database or the internet. The controller only knows it can load the
@@ -27,6 +31,8 @@ class SettingsController with ChangeNotifier {
   Future<void> loadSettings() async {
     _themeMode = await _settingsService.themeMode();
     _checkins = await _settingsService.getCheckins();
+    _summarizerPrompt = await _settingsService.getSummarizerPrompt();
+    _discussPrompt = await _settingsService.getDiscussPrompt();
     notifyListeners();
   }
 
@@ -62,6 +68,18 @@ class SettingsController with ChangeNotifier {
   Future<void> deleteCheckin(Checkin checkin) async {
     await _settingsService.deleteCheckin(checkin);
     _checkins = await _settingsService.getCheckins();
+    notifyListeners();
+  }
+
+  Future<void> updateSummarizerPrompt(String prompt) async {
+    _summarizerPrompt = prompt;
+    await _settingsService.updateSummarizerPrompt(prompt);
+    notifyListeners();
+  }
+
+  Future<void> updateDiscussPrompt(String prompt) async {
+    _discussPrompt = prompt;
+    await _settingsService.updateDiscussPrompt(prompt);
     notifyListeners();
   }
 }

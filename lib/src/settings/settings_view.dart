@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../widgets/checkins.dart';
+import '../widgets/developer_prompts.dart';
 import 'settings_controller.dart';
 
 /// Displays the various settings that can be customized by the user.
@@ -38,7 +39,15 @@ class SettingsView extends StatelessWidget {
         body: ListView(
           children: [
             Checkins(controller: controller),
-            // const Divider(),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: DeveloperPrompts(
+                onSummarizerPromptChanged: controller.updateSummarizerPrompt,
+                onDiscussPromptChanged: controller.updateDiscussPrompt,
+                initialSummarizerPrompt: controller.summarizerPrompt,
+                initialDiscussPrompt: controller.discussPrompt,
+              ),
+            ),
           ],
         ),
       ),

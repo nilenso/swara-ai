@@ -4,6 +4,7 @@ import '../models/checkin.dart';
 
 /// A service that stores and retrieves user settings.
 const String checkinBoxName = 'checkins';
+const String promptsBoxName = 'prompts';
 
 ///
 /// By default, this class does not persist user settings. If you'd like to
@@ -12,6 +13,26 @@ const String checkinBoxName = 'checkins';
 class SettingsService {
   /// Loads the User's preferred ThemeMode from local or remote storage.
   Future<ThemeMode> themeMode() async => ThemeMode.system;
+
+  Future<String> getSummarizerPrompt() async {
+    final box = await Hive.openBox<String>(promptsBoxName);
+    return box.get('summarizer', defaultValue: '') ?? '';
+  }
+
+  Future<String> getDiscussPrompt() async {
+    final box = await Hive.openBox<String>(promptsBoxName);
+    return box.get('discuss', defaultValue: '') ?? '';
+  }
+
+  Future<void> updateSummarizerPrompt(String prompt) async {
+    final box = await Hive.openBox<String>(promptsBoxName);
+    await box.put('summarizer', prompt);
+  }
+
+  Future<void> updateDiscussPrompt(String prompt) async {
+    final box = await Hive.openBox<String>(promptsBoxName);
+    await box.put('discuss', prompt);
+  }
 
   Future<List<Checkin>> getCheckins() async {
     final box = await Hive.openBox<Checkin>(checkinBoxName);

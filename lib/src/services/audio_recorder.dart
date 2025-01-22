@@ -13,13 +13,13 @@ class AudioRecorderService {
 
     final appDir = await getApplicationDocumentsDirectory();
     final timestamp = DateTime.now().toIso8601String();
-    final path = '${appDir.path}/$timestamp.wav';
+    final path = '${appDir.path}/$timestamp.m4a';
 
     if (await _recorder.hasPermission()) {
       try {
         await _recorder.start(
           path: path,
-          encoder: AudioEncoder.wav,
+          encoder: AudioEncoder.aacLc,
         );
         _isRecording = true;
         _currentPath = path;

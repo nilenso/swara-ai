@@ -1,5 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:hive/hive.dart';
+import '../../models/conversation_history.dart';
 import '../../settings/settings_service.dart';
 
 class ChatService {
@@ -40,6 +42,16 @@ class ChatService {
       throw Exception('Failed to get chat response: ${response.reasonPhrase}');
     }
 
-    return jsonDecode(responseBody)['choices'][0]['message']['content'];
+    final response_content =
+        jsonDecode(responseBody)['choices'][0]['message']['content'];
+
+    final box = Hive.box<ConversationHistory>('conversationHistory');
+    await box.add(ConversationHistory(
+      timestamp: DateTime.now(),
+      role: 'assistant',
+      content: response_content,
+    ));
+
+    return response_content;
   }
 }

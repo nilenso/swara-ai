@@ -5,6 +5,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'src/app.dart';
 import 'src/models/checkin.dart';
 import 'src/models/time_of_day_adapter.dart';
+import 'src/models/conversation_history.dart';
 import 'src/settings/settings_controller.dart';
 import 'src/settings/settings_service.dart';
 
@@ -16,6 +17,9 @@ void main() async {
 
   Hive.registerAdapter(TimeOfDayAdapter());
   Hive.registerAdapter(CheckinAdapter());
+  Hive.registerAdapter(ConversationHistoryAdapter());
+
+  await Hive.openBox<ConversationHistory>('conversationHistory');
 
   // Set up the SettingsController, which will glue user settings to multiple
   // Flutter Widgets.

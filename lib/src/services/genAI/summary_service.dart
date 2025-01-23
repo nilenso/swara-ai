@@ -1,5 +1,5 @@
-import 'dart:io';
-import 'package:path_provider/path_provider.dart';
+import 'package:hive/hive.dart';
+import 'package:swara/src/models/conversation_history.dart';
 import 'package:swara/src/services/genAI/chat_service.dart';
 import 'package:swara/src/settings/settings_service.dart';
 import 'package:swara/src/widgets/developer_prompts.dart';
@@ -11,45 +11,19 @@ class SummaryService {
       : _chatService = ChatService(settingsService);
 
   Future<String> getSummary(DateTime start, DateTime end) async {
-    final appDir = await getApplicationDocumentsDirectory();
-    final transcriptionDir = Directory('${appDir.path}/transcriptions');
-    if (!await transcriptionDir.exists()) {
-      return '';
-    }
+    final box = Hive.box<ConversationHistory>('conversationHistory');
+    final entries = box.values.where((entry) =>
+        entry.timestamp.isAfter(start) && entry.timestamp.isBefore(end));
 
-    final files = await transcriptionDir
-        .list()
-        .where((entity) => entity.path.endsWith('.json'))
-        .toList();
-    files.sort((a, b) => a.path.compareTo(b.path));
+    if (entries.isEmpty) return '';
 
-    final transcriptionEntries = <String>[];
-    for (final file in files) {
-      final timestamp = _getTimestampFromFileName(file.path);
-      if (timestamp != null &&
-          timestamp.isAfter(start) &&
-          timestamp.isBefore(end)) {
-        final content = await File(file.path).readAsString();
-        transcriptionEntries.add('${timestamp.toIso8601String()}: $content');
-      }
-    }
-
-    transcriptionEntries.sort();
-    final transcriptionsText = transcriptionEntries.join('\n');
-    if (transcriptionsText.isEmpty) return '';
+    final transcriptionsText = entries
+        .map((e) => '${e.timestamp.toIso8601String()}: ${e.content}')
+        .join('\n');
 
     return _chatService.chat(
       transcriptionsText,
       developerPrompt: DeveloperPrompts.defaultSummarizerPrompt,
     );
-  }
-
-  DateTime? _getTimestampFromFileName(String path) {
-    final filename = path.split('/').last.replaceAll('.json', '');
-    try {
-      return DateTime.parse(filename);
-    } catch (e) {
-      return null;
-    }
   }
 }

@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
+import 'package:hive/hive.dart';
+import '../../models/conversation_history.dart';
 import '../../settings/settings_service.dart';
 
 class TranscriptionService {
@@ -38,11 +40,18 @@ class TranscriptionService {
       await transcriptionDir.create();
     }
 
-    final audioFileName =
-        file.path.split('/').last.replaceAll(RegExp(r'\.[^\.]+$'), '');
-    final jsonFile = File('${transcriptionDir.path}/$audioFileName.json');
+    // final audioFileName =
+    //     file.path.split('/').last.replaceAll(RegExp(r'\.[^\.]+$'), '');
+    // final jsonFile = File('${transcriptionDir.path}/$audioFileName.json');
     final transcriptedText = jsonDecode(responseBody)['text'];
-    await jsonFile.writeAsString(transcriptedText);
+    // await jsonFile.writeAsString(transcriptedText);
+
+    final box = Hive.box<ConversationHistory>('conversationHistory');
+    await box.add(ConversationHistory(
+      timestamp: DateTime.now(),
+      role: 'user',
+      content: transcriptedText,
+    ));
 
     return transcriptedText;
   }

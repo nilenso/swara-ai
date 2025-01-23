@@ -35,16 +35,7 @@ class TranscriptionService {
       throw Exception('Failed to transcribe: ${response.statusCode}');
     }
 
-    final transcriptionDir = Directory('${file.parent.path}/transcriptions');
-    if (!await transcriptionDir.exists()) {
-      await transcriptionDir.create();
-    }
-
-    // final audioFileName =
-    //     file.path.split('/').last.replaceAll(RegExp(r'\.[^\.]+$'), '');
-    // final jsonFile = File('${transcriptionDir.path}/$audioFileName.json');
     final transcriptedText = jsonDecode(responseBody)['text'];
-    // await jsonFile.writeAsString(transcriptedText);
 
     final box = Hive.box<ConversationHistory>('conversationHistory');
     await box.add(ConversationHistory(

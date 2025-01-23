@@ -17,12 +17,15 @@ class SummaryService {
 
     if (entries.isEmpty) return '';
 
-    final transcriptionsText = entries
-        .map((e) => '${e.timestamp.toIso8601String()}: ${e.content}')
-        .join('\n');
+    final messages = entries
+        .map((e) => {
+              'role': e.role,
+              'content': e.content,
+            })
+        .toList();
 
     return _chatAPI.sendChatRequest(
-      transcriptionsText,
+      messages,
       DeveloperPrompts.defaultSummarizerPrompt,
       0.7,
     );

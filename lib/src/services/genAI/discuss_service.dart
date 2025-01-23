@@ -15,13 +15,21 @@ class DiscussService {
 
   Future<String> chat(String input) async {
     final prompt = await _settingsService.getDiscussPrompt() ?? defaultPrompt;
+    final box = Hive.box<ConversationHistory>('conversationHistory');
+
+    final messages = box.values
+        .map((e) => {
+              'role': e.role,
+              'content': e.content,
+            })
+        .toList();
+
     final response = await _chatAPI.sendChatRequest(
-      input,
+      messages,
       prompt,
       0.7,
     );
 
-    final box = Hive.box<ConversationHistory>('conversationHistory');
     await box.add(ConversationHistory(
       timestamp: DateTime.now(),
       role: 'assistant',

@@ -9,7 +9,7 @@ class ChatAPI {
   ChatAPI(this._settingsService);
 
   Future<String> sendChatRequest(
-    String input,
+    List<Map<String, String>> context,
     String developerPrompt,
     double temperature,
   ) async {
@@ -26,7 +26,7 @@ class ChatAPI {
       'model': 'gpt-4o-mini',
       'messages': [
         {'role': 'developer', 'content': developerPrompt},
-        {'role': 'user', 'content': input}
+        ...context,
       ],
       'temperature': temperature,
     };

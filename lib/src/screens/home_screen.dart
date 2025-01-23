@@ -49,6 +49,12 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         _chatBoxKey.currentState?.addChatResponse(response);
       } catch (e) {
         debugPrint('Chat error: $e');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(e.toString()),
+            backgroundColor: Colors.red,
+          ),
+        );
       }
     }
   }
@@ -107,12 +113,22 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
               ),
               DebugButton(
                 onPressed: () async {
-                  final now = DateTime.now();
-                  final summary = await _summaryService.getSummary(
-                    now.subtract(const Duration(hours: 1)),
-                    now,
-                  );
-                  _chatBoxKey.currentState?.addTranscription(summary);
+                  try {
+                    final now = DateTime.now();
+                    final summary = await _summaryService.getSummary(
+                      now.subtract(const Duration(hours: 1)),
+                      now,
+                    );
+                    _chatBoxKey.currentState?.addTranscription(summary);
+                  } catch (e) {
+                    debugPrint('Error: $e');
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(e.toString()),
+                        backgroundColor: Colors.red,
+                      ),
+                    );
+                  }
                 },
               ),
               ChatBox(key: _chatBoxKey),
@@ -120,6 +136,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                 child: TalkButton(
                   key: _talkButtonKey,
                   onTranscription: _handleTranscription,
+                  settingsService: _settingsService,
                 ),
               ),
             ],

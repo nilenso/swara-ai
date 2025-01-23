@@ -33,8 +33,11 @@ class ChatService {
     final response = await http.Client().send(request);
     final responseBody = await response.stream.bytesToString();
 
+    if (response.statusCode == 401) {
+      throw Exception('Authentication failure');
+    }
     if (response.statusCode != 200) {
-      throw Exception('Failed to get chat response: ${response.statusCode}');
+      throw Exception('Failed to get chat response: ${response.reasonPhrase}');
     }
 
     return jsonDecode(responseBody)['choices'][0]['message']['content'];

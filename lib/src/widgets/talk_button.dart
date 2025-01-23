@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:swara/src/services/audio_recorder.dart';
-import 'package:swara/src/env.dart';
+import 'package:swara/src/settings/settings_service.dart';
 import 'package:swara/src/services/genai/transcription_service.dart';
 
 const _buttonColor = Color(0xffdf2525);
@@ -12,7 +12,10 @@ const _pulseScaleFactor = 0.2;
 class TalkButton extends StatefulWidget {
   final void Function(String)? onTranscription;
 
-  const TalkButton({super.key, this.onTranscription});
+  const TalkButton(
+      {super.key, this.onTranscription, required this.settingsService});
+
+  final SettingsService settingsService;
 
   @override
   State<TalkButton> createState() => TalkButtonState();
@@ -20,7 +23,7 @@ class TalkButton extends StatefulWidget {
 
 class TalkButtonState extends State<TalkButton>
     with SingleTickerProviderStateMixin {
-  final _transcriptionService = TranscriptionService(apiKey: Env.openaiApiKey);
+  late final TranscriptionService _transcriptionService;
   Future<void> stopRecording() async {
     if (_audioRecorder.isRecording) {
       final path = await _audioRecorder.stopRecording();
@@ -28,9 +31,17 @@ class TalkButtonState extends State<TalkButton>
       setState(() {});
 
       if (path != null) {
-        _transcriptionService.transcribe(path).then((transcription) {
+        try {
+          final transcription = await _transcriptionService.transcribe(path);
           widget.onTranscription?.call(transcription);
-        });
+        } catch (e) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(e.toString()),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
       }
     }
   }
@@ -41,6 +52,7 @@ class TalkButtonState extends State<TalkButton>
   @override
   void initState() {
     super.initState();
+    _transcriptionService = TranscriptionService(widget.settingsService);
     // Initialize the pulse animation controller
     _pulseController = AnimationController(
       vsync: this,

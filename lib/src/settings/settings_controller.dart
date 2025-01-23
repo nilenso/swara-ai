@@ -19,11 +19,15 @@ class SettingsController with ChangeNotifier {
   List<Checkin> _checkins = [];
   String _summarizerPrompt = '';
   String _discussPrompt = '';
+  String _openAIKey = '';
+  String _geminiKey = '';
 
   ThemeMode get themeMode => _themeMode;
   List<Checkin> get checkins => List.unmodifiable(_checkins);
   String get summarizerPrompt => _summarizerPrompt;
   String get discussPrompt => _discussPrompt;
+  String get openAIKey => _openAIKey;
+  String get geminiKey => _geminiKey;
 
   /// Load the user's settings from the SettingsService. It may load from a
   /// local database or the internet. The controller only knows it can load the
@@ -33,6 +37,8 @@ class SettingsController with ChangeNotifier {
     _checkins = await _settingsService.getCheckins();
     _summarizerPrompt = await _settingsService.getSummarizerPrompt();
     _discussPrompt = await _settingsService.getDiscussPrompt();
+    _openAIKey = await _settingsService.getOpenAIKey();
+    _geminiKey = await _settingsService.getGeminiKey();
     notifyListeners();
   }
 
@@ -80,6 +86,18 @@ class SettingsController with ChangeNotifier {
   Future<void> updateDiscussPrompt(String prompt) async {
     _discussPrompt = prompt;
     await _settingsService.updateDiscussPrompt(prompt);
+    notifyListeners();
+  }
+
+  Future<void> updateOpenAIKey(String key) async {
+    _openAIKey = key;
+    await _settingsService.updateOpenAIKey(key);
+    notifyListeners();
+  }
+
+  Future<void> updateGeminiKey(String key) async {
+    _geminiKey = key;
+    await _settingsService.updateGeminiKey(key);
     notifyListeners();
   }
 }

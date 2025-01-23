@@ -5,6 +5,7 @@ import '../models/checkin.dart';
 /// A service that stores and retrieves user settings.
 const String checkinBoxName = 'checkins';
 const String promptsBoxName = 'prompts';
+const String authBoxName = 'auth_keys';
 
 ///
 /// By default, this class does not persist user settings. If you'd like to
@@ -70,5 +71,25 @@ class SettingsService {
     );
     final key = box.keyAt(box.values.toList().indexOf(entry));
     await box.delete(key);
+  }
+
+  Future<String> getOpenAIKey() async {
+    final box = await Hive.openBox<String>(authBoxName);
+    return box.get('openai_key', defaultValue: '') ?? '';
+  }
+
+  Future<String> getGeminiKey() async {
+    final box = await Hive.openBox<String>(authBoxName);
+    return box.get('gemini_key', defaultValue: '') ?? '';
+  }
+
+  Future<void> updateOpenAIKey(String key) async {
+    final box = await Hive.openBox<String>(authBoxName);
+    await box.put('openai_key', key);
+  }
+
+  Future<void> updateGeminiKey(String key) async {
+    final box = await Hive.openBox<String>(authBoxName);
+    await box.put('gemini_key', key);
   }
 }

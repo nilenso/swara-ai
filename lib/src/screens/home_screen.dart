@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:swara/src/services/genAI/chat_service.dart';
 import 'package:swara/src/services/genAI/summary_service.dart';
-import 'package:swara/src/env.dart';
+import 'package:swara/src/settings/settings_service.dart';
 import 'package:swara/src/widgets/chat_box.dart';
 import 'package:swara/src/widgets/talk_button.dart';
 import 'package:swara/src/widgets/journal_toggle.dart';
@@ -21,8 +21,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   final _chatBoxKey = GlobalKey<ChatBoxState>();
   final _talkButtonKey = GlobalKey<TalkButtonState>();
   bool _isToggled = false;
-  ChatService? _chatService;
-  final _summaryService = SummaryService();
+  late final ChatService _chatService;
+  late final SummaryService _summaryService;
+  final _settingsService = SettingsService();
 
   @override
   void initState() {
@@ -32,18 +33,15 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   }
 
   void _initChatService() {
-    try {
-      _chatService = ChatService(apiKey: Env.openaiApiKey);
-    } catch (e) {
-      debugPrint('Failed to initialize chat service: $e');
-    }
+    _chatService = ChatService(_settingsService);
+    _summaryService = SummaryService(_settingsService);
   }
 
   Future<void> _handleTranscription(String text) async {
     _chatBoxKey.currentState?.addTranscription(text);
-    if (_isToggled && _chatService != null) {
+    if (_isToggled) {
       try {
-        final response = await _chatService!.chat(
+        final response = await _chatService.chat(
           text,
           developerPrompt:
               _isToggled ? DeveloperPrompts.defaultDiscussPrompt : null,

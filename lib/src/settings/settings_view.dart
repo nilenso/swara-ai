@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../widgets/auth_keys.dart';
 import '../widgets/checkins.dart';
 import '../widgets/developer_prompts.dart';
 import 'settings_controller.dart';
@@ -48,6 +49,7 @@ class SettingsView extends StatelessWidget {
                 initialDiscussPrompt: controller.discussPrompt,
               ),
             ),
+            AuthKeys(controller: controller),
           ],
         ),
       ),

@@ -1,15 +1,20 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import '../../settings/settings_service.dart';
 
 class ChatService {
-  final String apiKey;
   final String baseUrl = 'https://api.openai.com/v1/chat/completions';
   static const defaultPrompt =
       'You are a helpful coach and assistant. Be kind and keep your responses short.';
+  final SettingsService _settingsService;
 
-  ChatService({required this.apiKey});
+  ChatService(this._settingsService);
 
   Future<String> chat(String input, {String? developerPrompt}) async {
+    final apiKey = await _settingsService.getOpenAIKey();
+    if (apiKey.isEmpty) {
+      throw Exception('OpenAI API key not found in settings');
+    }
     final request = http.Request('POST', Uri.parse(baseUrl));
 
     request.headers['Authorization'] = 'Bearer $apiKey';

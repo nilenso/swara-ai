@@ -1,11 +1,14 @@
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 import 'package:swara/src/services/genAI/chat_service.dart';
-import 'package:swara/src/env.dart';
+import 'package:swara/src/settings/settings_service.dart';
 import 'package:swara/src/widgets/developer_prompts.dart';
 
 class SummaryService {
-  final _chatService = ChatService(apiKey: Env.openaiApiKey);
+  final ChatService _chatService;
+
+  SummaryService(SettingsService settingsService)
+      : _chatService = ChatService(settingsService);
 
   Future<String> getSummary(DateTime start, DateTime end) async {
     final appDir = await getApplicationDocumentsDirectory();

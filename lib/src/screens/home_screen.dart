@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:swara/src/services/genAI/chat_service.dart';
+import 'package:swara/src/services/genAI/discuss_service.dart';
 import 'package:swara/src/services/genAI/summary_service.dart';
 import 'package:swara/src/settings/settings_service.dart';
 import 'package:swara/src/widgets/chat_box.dart';
@@ -21,7 +21,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   final _chatBoxKey = GlobalKey<ChatBoxState>();
   final _talkButtonKey = GlobalKey<TalkButtonState>();
   bool _isToggled = false;
-  late final ChatService _chatService;
+  late final DiscussService _discussService;
   late final SummaryService _summaryService;
   final _settingsService = SettingsService();
 
@@ -33,7 +33,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   }
 
   void _initChatService() {
-    _chatService = ChatService(_settingsService);
+    _discussService = DiscussService(_settingsService);
     _summaryService = SummaryService(_settingsService);
   }
 
@@ -41,10 +41,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     _chatBoxKey.currentState?.addTranscription(text);
     if (_isToggled) {
       try {
-        final response = await _chatService.chat(
+        final response = await _discussService.chat(
           text,
-          developerPrompt:
-              _isToggled ? DeveloperPrompts.defaultDiscussPrompt : null,
         );
         _chatBoxKey.currentState?.addChatResponse(response);
       } catch (e) {

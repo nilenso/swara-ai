@@ -1,14 +1,14 @@
 import 'package:hive/hive.dart';
 import 'package:swara/src/models/conversation_history.dart';
-import 'package:swara/src/services/genAI/chat_service.dart';
+import 'package:swara/src/services/genAI/chat_api.dart';
 import 'package:swara/src/settings/settings_service.dart';
 import 'package:swara/src/widgets/developer_prompts.dart';
 
 class SummaryService {
-  final ChatService _chatService;
+  final ChatAPI _chatAPI;
 
   SummaryService(SettingsService settingsService)
-      : _chatService = ChatService(settingsService);
+      : _chatAPI = ChatAPI(settingsService);
 
   Future<String> getSummary(DateTime start, DateTime end) async {
     final box = Hive.box<ConversationHistory>('conversationHistory');
@@ -21,9 +21,10 @@ class SummaryService {
         .map((e) => '${e.timestamp.toIso8601String()}: ${e.content}')
         .join('\n');
 
-    return _chatService.chat(
+    return _chatAPI.sendChatRequest(
       transcriptionsText,
-      developerPrompt: DeveloperPrompts.defaultSummarizerPrompt,
+      DeveloperPrompts.defaultSummarizerPrompt,
+      0.7,
     );
   }
 }

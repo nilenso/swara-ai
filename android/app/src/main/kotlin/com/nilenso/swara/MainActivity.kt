@@ -1,4 +1,4 @@
-package com.example.swara
+package com.nilenso.swara
 
 import io.flutter.embedding.android.FlutterActivity
 

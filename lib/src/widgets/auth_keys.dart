@@ -29,15 +29,15 @@ class AuthKeys extends StatelessWidget {
             onChanged: controller.updateOpenAIKey,
             controller: TextEditingController(text: controller.openAIKey),
           ),
-          const SizedBox(height: 16),
-          TextField(
-            decoration: const InputDecoration(
-              labelText: 'Gemini AI Key',
-              border: OutlineInputBorder(),
-            ),
-            onChanged: controller.updateGeminiKey,
-            controller: TextEditingController(text: controller.geminiKey),
-          ),
+          // const SizedBox(height: 16),
+          // TextField(
+          //   decoration: const InputDecoration(
+          //     labelText: 'Gemini AI Key',
+          //     border: OutlineInputBorder(),
+          //   ),
+          //   onChanged: controller.updateGeminiKey,
+          //   controller: TextEditingController(text: controller.geminiKey),
+          // ),
         ],
       ),
     );

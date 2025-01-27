@@ -1,8 +1,9 @@
 import 'package:hive/hive.dart';
 import '../../models/conversation_history.dart';
 import '../../settings/settings_service.dart';
-import 'interfaces/chat_api_interface.dart';
-import 'providers/openai_chat_api.dart';
+import '../genai/interfaces/chat_api_interface.dart';
+import '../genai/providers/openai_chat_api.dart';
+import '../genai/providers/gemini_chat_api.dart';
 
 class DiscussService {
   static const defaultPrompt =
@@ -12,12 +13,17 @@ class DiscussService {
 
   DiscussService(SettingsService settingsService)
       : _settingsService = settingsService {
-    _initializeChatService();
+    _initializeChatService().then((_) {}).catchError((error) {
+      print('Failed to initialize chat service: $error');
+    });
   }
 
-  void _initializeChatService() {
-    // Currently only OpenAI is implemented
-    _chatService = OpenAIChatAPI(_settingsService);
+  Future<void> _initializeChatService() async {
+    final provider = await _settingsService.getAIProvider();
+    _chatService = switch (provider) {
+      AIProvider.openai => OpenAIChatAPI(_settingsService),
+      AIProvider.gemini => GeminiChatAPI(_settingsService),
+    };
   }
 
   Future<String> chat(String input) async {

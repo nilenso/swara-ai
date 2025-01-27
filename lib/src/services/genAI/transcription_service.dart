@@ -3,6 +3,7 @@ import '../../models/conversation_history.dart';
 import '../../settings/settings_service.dart';
 import 'interfaces/transcription_api_interface.dart';
 import 'providers/openai_transcription_api.dart';
+import 'providers/gemini_transcription_api.dart';
 
 class TranscriptionService {
   final SettingsService _settingsService;
@@ -10,12 +11,18 @@ class TranscriptionService {
 
   TranscriptionService(SettingsService settingsService)
       : _settingsService = settingsService {
-    _initializeTranscriptionService();
+    _initializeTranscriptionService().then((_) {}).catchError((error) {
+      print('Failed to initialize transcription service: $error');
+    });
   }
 
-  void _initializeTranscriptionService() {
-    // Currently only OpenAI is implemented
-    _transcriptionService = OpenAITranscriptionAPI(_settingsService);
+  Future<void> _initializeTranscriptionService() async {
+    final provider = await _settingsService.getAIProvider();
+    print("final provider $provider");
+    _transcriptionService = switch (provider) {
+      AIProvider.openai => OpenAITranscriptionAPI(_settingsService),
+      AIProvider.gemini => GeminiTranscriptionAPI(_settingsService),
+    };
   }
 
   Future<String> transcribe(String filePath) async {

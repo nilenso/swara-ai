@@ -111,13 +111,14 @@ class SettingsService {
 
   Future<AIProvider> getAIProvider() async {
     final box = await Hive.openBox<String>(authBoxName);
-    final provider =
-        box.get('ai_provider', defaultValue: AIProvider.openai.name);
-    return AIProvider.values.firstWhere((e) => e.name == provider);
+    final openaiKey = box.get('openai_key', defaultValue: '');
+    final geminiKey = box.get('gemini_key', defaultValue: '');
+
+    if (geminiKey?.isNotEmpty == true) {
+      return AIProvider.gemini;
+    }
+    return AIProvider.openai;
   }
 
-  Future<void> updateAIProvider(AIProvider provider) async {
-    final box = await Hive.openBox<String>(authBoxName);
-    await box.put('ai_provider', provider.name);
-  }
+  // Remove updateAIProvider since provider is determined by key presence
 }

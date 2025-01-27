@@ -4,6 +4,8 @@
 <dict>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
+	<key>NSUserNotificationsUsageDescription</key>
+	<string>We need to send you notifications for your daily check-ins</string>
 	<key>CFBundleDisplayName</key>
 	<string>Swara</string>
 	<key>CFBundleExecutable</key>

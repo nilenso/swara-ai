@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/checkin.dart';
+import '../services/notification_service.dart';
 import 'settings_service.dart';
 
 /// A class that many Widgets can interact with to read user settings, update
@@ -8,7 +9,12 @@ import 'settings_service.dart';
 /// Controllers glue Data Services to Flutter Widgets. The SettingsController
 /// uses the SettingsService to store and retrieve user settings.
 class SettingsController with ChangeNotifier {
-  SettingsController(this._settingsService);
+  SettingsController(this._settingsService) {
+    _notificationService = NotificationService();
+    _notificationService.initNotifications();
+  }
+
+  late final NotificationService _notificationService;
 
   // Make SettingsService a private variable so it is not used directly.
   final SettingsService _settingsService;
@@ -65,6 +71,7 @@ class SettingsController with ChangeNotifier {
       final checkin = Checkin(time: time, prompt: prompt);
       await _settingsService.addCheckin(checkin);
       _checkins = await _settingsService.getCheckins();
+      await _notificationService.scheduleCheckinNotification(checkin);
       notifyListeners();
     } catch (e) {
       rethrow;
@@ -80,6 +87,7 @@ class SettingsController with ChangeNotifier {
 
   Future<void> deleteCheckin(Checkin checkin) async {
     await _settingsService.deleteCheckin(checkin);
+    await _notificationService.cancelNotification(checkin);
     _checkins = await _settingsService.getCheckins();
     notifyListeners();
   }

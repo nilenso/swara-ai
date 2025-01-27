@@ -21,6 +21,11 @@ class AuthKeys extends StatelessWidget {
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 16),
+          const Text(
+            'An OpenAI platform account is required to create an API key. API usage is billed and will need credits added to that account',
+            style: TextStyle(fontSize: 14),
+          ),
+          const SizedBox(height: 16),
           TextField(
             decoration: const InputDecoration(
               labelText: 'OpenAI Key',

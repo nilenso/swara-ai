@@ -33,8 +33,6 @@ class NotificationService {
     final platform =
         flutterLocalNotificationsPlugin.resolvePlatformSpecificImplementation<
             AndroidFlutterLocalNotificationsPlugin>();
-    final bool? granted = await platform?.requestNotificationsPermission();
-    debugPrint('Android notification permission granted: $granted');
     const AndroidInitializationSettings androidSettings =
         AndroidInitializationSettings('@mipmap/ic_launcher');
     const DarwinInitializationSettings iOSSettings =
@@ -42,10 +40,7 @@ class NotificationService {
       requestAlertPermission: true,
       requestBadgePermission: true,
       requestSoundPermission: true,
-      defaultPresentAlert: true,
-      defaultPresentBadge: true,
-      defaultPresentSound: true,
-      onDidReceiveLocalNotification: _onDidReceiveLocalNotification,
+      // onDidReceiveLocalNotification: _onDidReceiveLocalNotification,
     );
     const InitializationSettings settings =
         InitializationSettings(android: androidSettings, iOS: iOSSettings);
@@ -56,16 +51,28 @@ class NotificationService {
         debugPrint('Notification received: ${details.payload}');
       },
     );
-    final result = await flutterLocalNotificationsPlugin
-        .resolvePlatformSpecificImplementation<
-            IOSFlutterLocalNotificationsPlugin>()
-        ?.requestPermissions(
-          alert: true,
-          badge: true,
-          sound: true,
-        );
-    print('iOS notification permission granted: $result');
-    debugPrint('Notifications initialized');
+
+    final androidImplementation =
+        flutterLocalNotificationsPlugin.resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin>();
+
+    if (androidImplementation != null) {
+      final bool? granted =
+          await androidImplementation.requestNotificationsPermission();
+      debugPrint('Android permission granted: $granted');
+    }
+    final iosImplementation =
+        flutterLocalNotificationsPlugin.resolvePlatformSpecificImplementation<
+            IOSFlutterLocalNotificationsPlugin>();
+
+    if (iosImplementation != null) {
+      final result = await iosImplementation.requestPermissions(
+        alert: true,
+        badge: true,
+        sound: true,
+      );
+      debugPrint('iOS notification permission granted: $result');
+    }
   }
 
   // Test method to show immediate notification
@@ -97,22 +104,8 @@ class NotificationService {
     );
   }
 
-  Future<bool> _checkNotificationPermission() async {
-    final platform =
-        flutterLocalNotificationsPlugin.resolvePlatformSpecificImplementation<
-            AndroidFlutterLocalNotificationsPlugin>();
-    final result = await platform?.areNotificationsEnabled() ?? false;
-    debugPrint('Notification permission status: $result');
-    return result;
-  }
-
   Future<void> scheduleDailyNotification(
       TimeOfDay time, String title, String body) async {
-    if (!await _checkNotificationPermission()) {
-      print('ERROR: Notification permission not granted');
-      return;
-    }
-
     debugPrint('=== Scheduling notification ===');
     debugPrint('Time: ${time.hour}:${time.minute}');
     debugPrint('Current time: ${DateTime.now()}');
@@ -169,10 +162,10 @@ class NotificationService {
     }
   }
 
-  static void _onDidReceiveLocalNotification(
-      int id, String? title, String? body, String? payload) {
-    print('iOS foreground notification: $title');
-  }
+  // static void _onDidReceiveLocalNotification(
+  //     int id, String? title, String? body, String? payload) {
+  //   print('iOS foreground notification: $title');
+  // }
 
   // Helper function to calculate the next occurrence of a specific time
   tz.TZDateTime _nextInstanceOfTime(TimeOfDay time) {

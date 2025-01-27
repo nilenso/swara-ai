@@ -55,11 +55,11 @@ class _DeveloperPromptsState extends State<DeveloperPrompts> {
       children: [
         const Text('Developer Prompts',
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-        const SizedBox(height: 8),
-        ElevatedButton(
-          onPressed: () => NotificationService().showTestNotification(),
-          child: const Text('Test Notification'),
-        ),
+        // const SizedBox(height: 8),
+        // ElevatedButton(
+        //   onPressed: () => NotificationService().showTestNotification(),
+        //   child: const Text('Test Notification'),
+        // ),
         const SizedBox(height: 8),
         TextField(
           style: const TextStyle(fontSize: 14),

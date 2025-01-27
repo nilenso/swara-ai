@@ -7,6 +7,11 @@ const String checkinBoxName = 'checkins';
 const String promptsBoxName = 'prompts';
 const String authBoxName = 'auth_keys';
 
+enum AIProvider {
+  openai,
+  gemini,
+}
+
 ///
 /// By default, this class does not persist user settings. If you'd like to
 /// persist the user settings locally, use the shared_preferences package. If
@@ -102,5 +107,17 @@ class SettingsService {
   Future<void> updateGeminiKey(String key) async {
     final box = await Hive.openBox<String>(authBoxName);
     await box.put('gemini_key', key);
+  }
+
+  Future<AIProvider> getAIProvider() async {
+    final box = await Hive.openBox<String>(authBoxName);
+    final provider =
+        box.get('ai_provider', defaultValue: AIProvider.openai.name);
+    return AIProvider.values.firstWhere((e) => e.name == provider);
+  }
+
+  Future<void> updateAIProvider(AIProvider provider) async {
+    final box = await Hive.openBox<String>(authBoxName);
+    await box.put('ai_provider', provider.name);
   }
 }

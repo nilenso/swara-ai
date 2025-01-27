@@ -1,13 +1,15 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import '../../settings/settings_service.dart';
+import '../../../settings/settings_service.dart';
+import '../interfaces/chat_api_interface.dart';
 
-class ChatAPI {
+class OpenAIChatAPI implements ChatAPIInterface {
   final String baseUrl = 'https://api.openai.com/v1/chat/completions';
   final SettingsService _settingsService;
 
-  ChatAPI(this._settingsService);
+  OpenAIChatAPI(this._settingsService);
 
+  @override
   Future<String> sendChatRequest(
     List<Map<String, String>> context,
     String developerPrompt,

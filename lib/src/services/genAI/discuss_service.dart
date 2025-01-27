@@ -1,17 +1,24 @@
 import 'package:hive/hive.dart';
 import '../../models/conversation_history.dart';
 import '../../settings/settings_service.dart';
-import 'chat_api.dart';
+import 'interfaces/chat_api_interface.dart';
+import 'providers/openai_chat_api.dart';
 
 class DiscussService {
   static const defaultPrompt =
       'You are a helpful coach and assistant. Be kind and keep your responses short.';
-  final ChatAPI _chatAPI;
   final SettingsService _settingsService;
+  late final ChatAPIInterface _chatService;
 
   DiscussService(SettingsService settingsService)
-      : _settingsService = settingsService,
-        _chatAPI = ChatAPI(settingsService);
+      : _settingsService = settingsService {
+    _initializeChatService();
+  }
+
+  void _initializeChatService() {
+    // Currently only OpenAI is implemented
+    _chatService = OpenAIChatAPI(_settingsService);
+  }
 
   Future<String> chat(String input) async {
     final prompt = await _settingsService.getDiscussPrompt() ?? defaultPrompt;
@@ -24,7 +31,7 @@ class DiscussService {
             })
         .toList();
 
-    final response = await _chatAPI.sendChatRequest(
+    final response = await _chatService.sendChatRequest(
       messages,
       prompt,
       0.7,

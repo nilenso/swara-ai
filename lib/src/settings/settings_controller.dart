@@ -60,15 +60,22 @@ class SettingsController with ChangeNotifier {
     await _settingsService.updateThemeMode(newThemeMode);
   }
 
-  Future<void> addCheckin(TimeOfDay time, String note) async {
+  Future<void> addCheckin(TimeOfDay time, String? prompt) async {
     try {
-      final checkin = Checkin(time: time, note: note);
+      final checkin = Checkin(time: time, prompt: prompt);
       await _settingsService.addCheckin(checkin);
       _checkins = await _settingsService.getCheckins();
       notifyListeners();
     } catch (e) {
       rethrow;
     }
+  }
+
+  Future<void> updatePrompt(Checkin checkin, String prompt) async {
+    final updatedCheckin = Checkin(time: checkin.time, prompt: prompt);
+    await _settingsService.updateCheckin(checkin, updatedCheckin);
+    _checkins = await _settingsService.getCheckins();
+    notifyListeners();
   }
 
   Future<void> deleteCheckin(Checkin checkin) async {

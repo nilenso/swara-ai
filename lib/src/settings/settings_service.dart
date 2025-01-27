@@ -73,6 +73,17 @@ class SettingsService {
     await box.delete(key);
   }
 
+  Future<void> updateCheckin(Checkin oldCheckin, Checkin newCheckin) async {
+    final box = await Hive.openBox<Checkin>(checkinBoxName);
+    final entry = box.values.firstWhere(
+      (c) =>
+          c.time.hour == oldCheckin.time.hour &&
+          c.time.minute == oldCheckin.time.minute,
+    );
+    final key = box.keyAt(box.values.toList().indexOf(entry));
+    await box.put(key, newCheckin);
+  }
+
   Future<String> getOpenAIKey() async {
     final box = await Hive.openBox<String>(authBoxName);
     return box.get('openai_key', defaultValue: '') ?? '';

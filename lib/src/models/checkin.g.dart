@@ -18,7 +18,7 @@ class CheckinAdapter extends TypeAdapter<Checkin> {
     };
     return Checkin(
       time: fields[0] as TimeOfDay,
-      note: fields[1] as String,
+      prompt: fields[1] as String?,
     );
   }
 
@@ -29,7 +29,7 @@ class CheckinAdapter extends TypeAdapter<Checkin> {
       ..writeByte(0)
       ..write(obj.time)
       ..writeByte(1)
-      ..write(obj.note);
+      ..write(obj.prompt);
   }
 
   @override

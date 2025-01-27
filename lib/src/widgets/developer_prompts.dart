@@ -52,20 +52,9 @@ class _DeveloperPromptsState extends State<DeveloperPrompts> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text('Developer Prompts', style: TextStyle(fontSize: 16)),
+        const Text('Developer Prompts',
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
         const SizedBox(height: 8),
-        TextField(
-          style: const TextStyle(fontSize: 14),
-          controller: summarizerPromptController,
-          decoration: const InputDecoration(
-            labelText: 'Summarizer Prompt',
-            border: OutlineInputBorder(),
-          ),
-          maxLines: 7,
-          minLines: 2,
-          onChanged: widget.onSummarizerPromptChanged,
-        ),
-        const SizedBox(height: 16),
         TextField(
           style: const TextStyle(fontSize: 14),
           controller: discussPromptController,

@@ -9,7 +9,7 @@ class Checkin {
   final TimeOfDay time;
 
   @HiveField(1)
-  final String note;
+  final String? prompt;
 
-  Checkin({required this.time, required this.note});
+  Checkin({required this.time, this.prompt});
 }

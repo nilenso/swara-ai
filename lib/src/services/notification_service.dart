@@ -27,10 +27,26 @@ class NotificationService {
       FlutterLocalNotificationsPlugin();
 
   Future<void> initNotifications() async {
+    tz.initializeTimeZones(); // Initialize timezone data at app start
+
+    // Request Android runtime permissions
+    final platform =
+        flutterLocalNotificationsPlugin.resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin>();
+    final bool? granted = await platform?.requestNotificationsPermission();
+    debugPrint('Android notification permission granted: $granted');
     const AndroidInitializationSettings androidSettings =
         AndroidInitializationSettings('@mipmap/ic_launcher');
     const DarwinInitializationSettings iOSSettings =
-        DarwinInitializationSettings();
+        DarwinInitializationSettings(
+      requestAlertPermission: true,
+      requestBadgePermission: true,
+      requestSoundPermission: true,
+      defaultPresentAlert: true,
+      defaultPresentBadge: true,
+      defaultPresentSound: true,
+      onDidReceiveLocalNotification: _onDidReceiveLocalNotification,
+    );
     const InitializationSettings settings =
         InitializationSettings(android: androidSettings, iOS: iOSSettings);
 
@@ -40,12 +56,21 @@ class NotificationService {
         debugPrint('Notification received: ${details.payload}');
       },
     );
+    final result = await flutterLocalNotificationsPlugin
+        .resolvePlatformSpecificImplementation<
+            IOSFlutterLocalNotificationsPlugin>()
+        ?.requestPermissions(
+          alert: true,
+          badge: true,
+          sound: true,
+        );
+    print('iOS notification permission granted: $result');
     debugPrint('Notifications initialized');
   }
 
   // Test method to show immediate notification
   Future<void> showTestNotification() async {
-    debugPrint('Showing test notification');
+    debugPrint('Attempting to show test notification');
     await flutterLocalNotificationsPlugin.show(
       999,
       'Test Notification',
@@ -57,40 +82,96 @@ class NotificationService {
           channelDescription: 'Channel for test notifications',
           importance: Importance.max,
           priority: Priority.high,
+          enableLights: true,
+          enableVibration: true,
+          playSound: true,
+          visibility: NotificationVisibility.public,
         ),
-        iOS: DarwinNotificationDetails(),
+        iOS: DarwinNotificationDetails(
+          presentAlert: true,
+          presentSound: true,
+          presentBadge: true,
+          sound: 'default',
+        ),
       ),
     );
   }
 
+  Future<bool> _checkNotificationPermission() async {
+    final platform =
+        flutterLocalNotificationsPlugin.resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin>();
+    final result = await platform?.areNotificationsEnabled() ?? false;
+    debugPrint('Notification permission status: $result');
+    return result;
+  }
+
   Future<void> scheduleDailyNotification(
       TimeOfDay time, String title, String body) async {
-    // Initialize timezone (necessary for accurate scheduling)
-    tz.initializeTimeZones();
-    debugPrint('Scheduling notification for ${time.hour}:${time.minute}');
+    if (!await _checkNotificationPermission()) {
+      print('ERROR: Notification permission not granted');
+      return;
+    }
+
+    debugPrint('=== Scheduling notification ===');
+    debugPrint('Time: ${time.hour}:${time.minute}');
+    debugPrint('Current time: ${DateTime.now()}');
 
     final scheduledTime = _nextInstanceOfTime(time);
     debugPrint('Next scheduled time: $scheduledTime');
+    debugPrint('Time zone: ${tz.local}');
+    debugPrint('================================');
 
-    await flutterLocalNotificationsPlugin.zonedSchedule(
-      _getNotificationId(time),
-      title,
-      body,
-      scheduledTime,
-      const NotificationDetails(
-        android: AndroidNotificationDetails(
-            'daily_notifications', 'Daily Notifications',
+    try {
+      await flutterLocalNotificationsPlugin.zonedSchedule(
+        _getNotificationId(time),
+        title,
+        body,
+        scheduledTime,
+        const NotificationDetails(
+          android: AndroidNotificationDetails(
+            'daily_notifications',
+            'Daily Notifications',
             channelDescription: 'This channel is used for daily notifications',
-            importance: Importance.high,
-            priority: Priority.high),
-        iOS: DarwinNotificationDetails(),
-      ),
-      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-      uiLocalNotificationDateInterpretation:
-          UILocalNotificationDateInterpretation.absoluteTime,
-      matchDateTimeComponents:
-          DateTimeComponents.time, // Ensures daily repetition
-    );
+            importance: Importance.max,
+            priority: Priority.high,
+            enableLights: true,
+            enableVibration: true,
+            playSound: true,
+            visibility: NotificationVisibility.public,
+          ),
+          iOS: DarwinNotificationDetails(
+            presentAlert: true,
+            presentSound: true,
+            presentBadge: true,
+            sound: 'default',
+          ),
+        ),
+        androidScheduleMode: AndroidScheduleMode
+            .alarmClock, // Use alarm clock mode for more reliable scheduling
+        uiLocalNotificationDateInterpretation:
+            UILocalNotificationDateInterpretation.absoluteTime,
+        matchDateTimeComponents:
+            DateTimeComponents.time, // Ensures daily repetition
+      );
+      debugPrint('Notification scheduled successfully');
+
+      // Verify schedule
+      final pendingNotifs =
+          await flutterLocalNotificationsPlugin.pendingNotificationRequests();
+      debugPrint('Pending notifications: ${pendingNotifs.length}');
+      for (var notif in pendingNotifs) {
+        debugPrint(
+            'Pending notification: id=${notif.id}, title=${notif.title}');
+      }
+    } catch (e) {
+      debugPrint('ERROR scheduling notification: $e');
+    }
+  }
+
+  static void _onDidReceiveLocalNotification(
+      int id, String? title, String? body, String? payload) {
+    print('iOS foreground notification: $title');
   }
 
   // Helper function to calculate the next occurrence of a specific time

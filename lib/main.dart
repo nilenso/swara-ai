@@ -3,6 +3,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 import 'src/app.dart';
+import 'src/services/notification_service.dart';
 import 'src/models/checkin.dart';
 import 'src/models/time_of_day_adapter.dart';
 import 'src/models/conversation_history.dart';
@@ -28,6 +29,9 @@ void main() async {
   // Load the user's preferred theme while the splash screen is displayed.
   // This prevents a sudden theme change when the app is first displayed.
   await settingsController.loadSettings();
+
+  // Initialize notifications
+  await NotificationService().initNotifications();
 
   // Run the app and pass in the SettingsController. The app listens to the
   // SettingsController for changes, then passes it further down to the

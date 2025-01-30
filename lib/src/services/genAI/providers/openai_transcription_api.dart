@@ -34,7 +34,7 @@ class OpenAITranscriptionAPI implements TranscriptionAPIInterface {
       throw Exception('Authentication failure');
     }
     if (response.statusCode != 200) {
-      throw Exception('Failed to transcribe: ${response.statusCode}');
+      throw Exception('${response.reasonPhrase}');
     }
 
     final transcriptedText = jsonDecode(responseBody)['text'];

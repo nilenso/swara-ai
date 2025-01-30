@@ -41,7 +41,7 @@ class OpenAIChatAPI implements ChatAPIInterface {
       throw Exception('Authentication failure');
     }
     if (response.statusCode != 200) {
-      throw Exception('Failed to get chat response: ${response.reasonPhrase}');
+      throw Exception('${response.reasonPhrase}');
     }
 
     return jsonDecode(responseBody)['choices'][0]['message']['content'];
